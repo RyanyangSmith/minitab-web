@@ -20,6 +20,10 @@ export const ParetoChart: React.FC<ParetoChartProps> = ({ tableId, resultId }) =
   const [defectCol, setDefectCol] = useState<number | null>(savedConfig?.defectCol ?? null);
   const [freqCol, setFreqCol] = useState<number | null>(savedConfig?.freqCol ?? null);
 
+  const saveConfig = (d: number | null, f: number | null) => {
+    updateResultData(resultId, { defectCol: d, freqCol: f }, {});
+  };
+
   const options = useMemo(() => {
     if (!table) return [];
     return Array.from({ length: table.columns }, (_, i) => {
@@ -73,12 +77,12 @@ export const ParetoChart: React.FC<ParetoChartProps> = ({ tableId, resultId }) =
         <h3 className="text-sm font-semibold text-gray-700">帕累托图 - 配置</h3>
         <div className="flex items-center gap-2">
           <label className="text-sm font-medium text-gray-600 w-[100px]">缺陷类别列</label>
-          <select className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm bg-white" value={defectCol ?? ''} onChange={(e) => { setDefectCol(e.target.value === '' ? null : Number(e.target.value)); }}>
+          <select className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm bg-white" value={defectCol ?? ''} onChange={(e) => { const v = e.target.value === '' ? null : Number(e.target.value); setDefectCol(v); saveConfig(v, freqCol); }}>
             <option value="">请选择...</option>
             {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
           <label className="text-sm font-medium text-gray-600 w-[100px] ml-3">频数列（可选）</label>
-          <select className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm bg-white" value={freqCol ?? ''} onChange={(e) => { setFreqCol(e.target.value === '' ? null : Number(e.target.value)); }}>
+          <select className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm bg-white" value={freqCol ?? ''} onChange={(e) => { const v = e.target.value === '' ? null : Number(e.target.value); setFreqCol(v); saveConfig(defectCol, v); }}>
             <option value="">自动计数</option>
             {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>

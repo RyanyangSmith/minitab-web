@@ -197,7 +197,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
             navigateTo(active.row + 1, active.col);
           } else {
             // Auto-expand: add 5 more rows
-            ensureSize(tableId, table.rows + 5, table.columns);
+            ensureSize(tableId, table.rows + 1, table.columns);
             navigateTo(active.row + 1, active.col);
           }
           break;
@@ -211,7 +211,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
             navigateTo(active.row, active.col + 1);
           } else {
             // Auto-expand: add 5 more columns
-            ensureSize(tableId, table.rows, table.columns + 5);
+            ensureSize(tableId, table.rows, table.columns + 1);
             navigateTo(active.row, active.col + 1);
           }
           break;
@@ -223,7 +223,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
             navigateTo(active.row + 1, 0);
           } else {
             // At last cell: expand both
-            ensureSize(tableId, table.rows + 5, table.columns + 5);
+            ensureSize(tableId, table.rows + 1, table.columns + 1);
             navigateTo(active.row + 1, 0);
           }
           break;
@@ -232,7 +232,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
           if (active.row < table.rows - 1) {
             navigateTo(active.row + 1, active.col);
           } else {
-            ensureSize(tableId, table.rows + 5, table.columns);
+            ensureSize(tableId, table.rows + 1, table.columns);
             navigateTo(active.row + 1, active.col);
           }
           break;

@@ -38,8 +38,11 @@ export const BoxPlotView: React.FC<BoxPlotProps> = ({ tableId, resultId }) => {
 
   const chartOption: EChartsOption | null = useMemo(() => {
     if (selectedCols.length === 0) return null;
-    const series = selectedCols.map((col) => {
+    const boxData: number[][] = [];
+    const labels: string[] = [];
+    for (const col of selectedCols) {
       const data = getColumnData(tableId, col);
+      if (data.length === 0) continue;
       const stats = descriptiveStats(data);
       const iqr = stats.q3 - stats.q1;
       const lower = stats.q1 - 1.5 * iqr;
@@ -47,14 +50,15 @@ export const BoxPlotView: React.FC<BoxPlotProps> = ({ tableId, resultId }) => {
       const innerData = data.filter((v) => v >= lower && v <= upper);
       const whiskerMin = innerData.length > 0 ? Math.min(...innerData) : stats.q1;
       const whiskerMax = innerData.length > 0 ? Math.max(...innerData) : stats.q3;
-      const label = getSubHeader(tableId, col) || columnName(col);
-      return { type: 'boxplot' as const, name: label, data: [[whiskerMin, stats.q1, stats.median, stats.q3, whiskerMax]], itemStyle: { color: '#3b82f6' } };
-    });
+      boxData.push([whiskerMin, stats.q1, stats.median, stats.q3, whiskerMax]);
+      labels.push(getSubHeader(tableId, col) || columnName(col));
+    }
+    if (boxData.length === 0) return null;
     return {
       title: { text: '箱线图', left: 'center', textStyle: { fontSize: 13 } },
-      xAxis: { type: 'category' as const, data: selectedCols.map((c) => getSubHeader(tableId, c) || columnName(c)) },
+      xAxis: { type: 'category' as const, data: labels },
       yAxis: { type: 'value' as const, name: '数值' },
-      series,
+      series: [{ type: 'boxplot' as const, data: boxData, itemStyle: { color: '#3b82f6' } }],
       tooltip: { trigger: 'item' as const },
     };
   }, [selectedCols, tableId, getColumnData, getSubHeader]);

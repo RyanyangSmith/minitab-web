@@ -1,24 +1,15 @@
 import React from 'react';
 import { BarChart3, TrendingUp, ScatterChart, LayoutList, BarChartHorizontal } from 'lucide-react';
-import { zh } from '../../i18n/zh';
 import { useTableStore } from '../../store/tableStore';
 import { useAnalysisStore } from '../../store/analysisStore';
-import { normalityTest } from '../../stats/normality';
-import { linearRegression } from '../../stats/regression';
 import type { AnalysisType } from '../../types';
 
-interface RibbonTabDef {
-  type: AnalysisType;
-  label: string;
-  icon: React.ReactNode;
-}
-
-const tabs: RibbonTabDef[] = [
-  { type: 'normality-test', label: zh.ribbon.normalityTest, icon: <BarChart3 size={18} /> },
-  { type: 'linear-regression', label: zh.ribbon.linearRegression, icon: <TrendingUp size={18} /> },
-  { type: 'scatter-plot', label: zh.ribbon.scatterPlot, icon: <ScatterChart size={18} /> },
-  { type: 'box-plot', label: zh.ribbon.LayoutList, icon: <LayoutList size={18} /> },
-  { type: 'pareto-chart', label: zh.ribbon.paretoChart, icon: <BarChartHorizontal size={18} /> },
+const tabs: { type: AnalysisType; label: string; icon: React.ReactNode }[] = [
+  { type: 'normality-test', label: '正态检验', icon: <BarChart3 size={18} /> },
+  { type: 'linear-regression', label: '线性回归', icon: <TrendingUp size={18} /> },
+  { type: 'scatter-plot', label: '散点图', icon: <ScatterChart size={18} /> },
+  { type: 'box-plot', label: '箱线图', icon: <LayoutList size={18} /> },
+  { type: 'pareto-chart', label: '帕累托图', icon: <BarChartHorizontal size={18} /> },
 ];
 
 export const Ribbon: React.FC = () => {

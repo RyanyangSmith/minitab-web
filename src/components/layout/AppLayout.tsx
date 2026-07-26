@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Ribbon } from './Ribbon';
 import { Sidebar } from './Sidebar';
 import { Workspace } from './Workspace';
 
@@ -21,13 +22,16 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-white">
-      <div style={{ width: sidebarWidth }} className="flex-shrink-0 border-r border-gray-200 bg-gray-50 overflow-y-auto">
-        <Sidebar />
-      </div>
-      <div className="w-1 cursor-col-resize bg-transparent hover:bg-blue-300 active:bg-blue-500 flex-shrink-0" onMouseDown={handleMouseDown} />
-      <div className="flex-1 overflow-hidden bg-white">
-        <Workspace sidebarWidth={sidebarWidth} />
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-white">
+      <Ribbon />
+      <div className="flex flex-1 overflow-hidden">
+        <div style={{ width: sidebarWidth }} className="flex-shrink-0 border-r border-gray-200 bg-gray-50 overflow-y-auto">
+          <Sidebar />
+        </div>
+        <div className="w-1 cursor-col-resize bg-transparent hover:bg-blue-300 active:bg-blue-500 flex-shrink-0" onMouseDown={handleMouseDown} />
+        <div className="flex-1 overflow-hidden bg-white">
+          <Workspace sidebarWidth={sidebarWidth} />
+        </div>
       </div>
     </div>
   );
