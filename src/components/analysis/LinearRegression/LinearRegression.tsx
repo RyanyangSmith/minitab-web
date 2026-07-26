@@ -123,7 +123,7 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
             </div>
             {/* Center chart */}
             <div className="flex-1 min-w-0">
-              {scatterFitOption && <ChartContainer option={scatterFitOption} height={380} />}
+              {scatterFitOption && <ChartContainer option={scatterFitOption} height={250} />}
             </div>
             {/* Right stats */}
             <div className="w-56 flex-shrink-0 text-xs">
@@ -134,8 +134,8 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
           </div>
           {/* Bottom: residual charts */}
           <div className="flex gap-3">
-            <div className="flex-1">{residualFitOption && <ChartContainer option={residualFitOption} height={300} />}</div>
-            <div className="flex-1">{residualQQOption && <ChartContainer option={residualQQOption} height={300} />}</div>
+            <div className="flex-1">{residualFitOption && <ChartContainer option={residualFitOption} height={250} />}</div>
+            <div className="flex-1">{residualQQOption && <ChartContainer option={residualQQOption} height={250} />}</div>
           </div>
         </div>
       )}

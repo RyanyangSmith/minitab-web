@@ -17,7 +17,6 @@ export const BoxPlotView: React.FC<BoxPlotProps> = ({ tableId, resultId }) => {
 
   const saved = results[resultId];
   const savedConfig = saved?.config as { cols?: number[] } | undefined;
-
   const [selectedCols, setSelectedCols] = useState<number[]>(savedConfig?.cols ?? []);
 
   const options = useMemo(() => {
@@ -35,6 +34,19 @@ export const BoxPlotView: React.FC<BoxPlotProps> = ({ tableId, resultId }) => {
       return next;
     });
   };
+
+  // Stats data for the table below
+  const statsData = useMemo(() => {
+    if (selectedCols.length === 0) return [];
+    return selectedCols.map((col) => {
+      const data = getColumnData(tableId, col);
+      const s = descriptiveStats(data);
+      return {
+        name: getSubHeader(tableId, col) || columnName(col),
+        n: s.n, min: s.min, max: s.max, mean: s.mean, median: s.median, q1: s.q1, q3: s.q3, stddev: s.stddev,
+      };
+    });
+  }, [selectedCols, tableId, getColumnData, getSubHeader]);
 
   const chartOption: EChartsOption | null = useMemo(() => {
     if (selectedCols.length === 0) return null;
@@ -58,7 +70,16 @@ export const BoxPlotView: React.FC<BoxPlotProps> = ({ tableId, resultId }) => {
       title: { text: '箱线图', left: 'center', textStyle: { fontSize: 13 } },
       xAxis: { type: 'category' as const, data: labels },
       yAxis: { type: 'value' as const, name: '数值' },
-      series: [{ type: 'boxplot' as const, data: boxData, itemStyle: { color: '#3b82f6' } }],
+      series: [{
+        type: 'boxplot' as const,
+        data: boxData,
+        itemStyle: {
+          color: '#3b82f6',
+          borderColor: '#1d4ed8',
+          borderWidth: 1.5,
+        },
+        boxWidth: [20, 40],
+      }],
       tooltip: { trigger: 'item' as const },
     };
   }, [selectedCols, tableId, getColumnData, getSubHeader]);
@@ -78,7 +99,43 @@ export const BoxPlotView: React.FC<BoxPlotProps> = ({ tableId, resultId }) => {
           ))}
         </div>
       </div>
-      {chartOption && <ChartContainer option={chartOption} height={400} />}
+
+      {chartOption && <ChartContainer option={chartOption} height={350} />}
+
+      {statsData.length > 0 && (
+        <div className="text-xs">
+          <table className="w-full border-collapse border border-gray-200">
+            <thead>
+              <tr className="bg-gray-50">
+                <th className="px-2 py-1 border border-gray-200 text-left">组名</th>
+                <th className="px-2 py-1 border border-gray-200 text-right">N</th>
+                <th className="px-2 py-1 border border-gray-200 text-right">Min</th>
+                <th className="px-2 py-1 border border-gray-200 text-right">Q1</th>
+                <th className="px-2 py-1 border border-gray-200 text-right">中位数</th>
+                <th className="px-2 py-1 border border-gray-200 text-right">均值</th>
+                <th className="px-2 py-1 border border-gray-200 text-right">Q3</th>
+                <th className="px-2 py-1 border border-gray-200 text-right">Max</th>
+                <th className="px-2 py-1 border border-gray-200 text-right">标准差</th>
+              </tr>
+            </thead>
+            <tbody>
+              {statsData.map((s) => (
+                <tr key={s.name} className="border-b border-gray-100 hover:bg-blue-50">
+                  <td className="px-2 py-1 border border-gray-200 font-medium">{s.name}</td>
+                  <td className="px-2 py-1 border border-gray-200 text-right font-mono">{s.n}</td>
+                  <td className="px-2 py-1 border border-gray-200 text-right font-mono">{s.min.toFixed(2)}</td>
+                  <td className="px-2 py-1 border border-gray-200 text-right font-mono">{s.q1.toFixed(2)}</td>
+                  <td className="px-2 py-1 border border-gray-200 text-right font-mono font-semibold text-blue-700">{s.median.toFixed(2)}</td>
+                  <td className="px-2 py-1 border border-gray-200 text-right font-mono">{s.mean.toFixed(2)}</td>
+                  <td className="px-2 py-1 border border-gray-200 text-right font-mono">{s.q3.toFixed(2)}</td>
+                  <td className="px-2 py-1 border border-gray-200 text-right font-mono">{s.max.toFixed(2)}</td>
+                  <td className="px-2 py-1 border border-gray-200 text-right font-mono">{s.stddev.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
