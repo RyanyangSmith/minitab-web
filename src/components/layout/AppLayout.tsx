@@ -25,10 +25,10 @@ export const AppLayout: React.FC = () => {
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-white">
       <Ribbon />
       <div className="flex flex-1 overflow-hidden">
-        <div style={{ width: sidebarWidth }} className="flex-shrink-0 border-r border-gray-200 bg-gray-50 overflow-y-auto">
+        <div style={{ width: sidebarWidth }} className="flex-shrink-0 border-r border-gray-200 bg-gray-50/50 overflow-y-auto">
           <Sidebar />
         </div>
-        <div className="w-1 cursor-col-resize bg-transparent hover:bg-blue-300 active:bg-blue-500 flex-shrink-0" onMouseDown={handleMouseDown} />
+        <div className="w-0.5 cursor-col-resize bg-transparent hover:bg-blue-300 active:bg-blue-500 flex-shrink-0 transition-colors" onMouseDown={handleMouseDown} />
         <div className="flex-1 overflow-hidden bg-white">
           <Workspace sidebarWidth={sidebarWidth} />
         </div>

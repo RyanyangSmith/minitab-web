@@ -98,22 +98,22 @@ export const NormalityTest: React.FC<NormalityTestProps> = ({ tableId, resultId 
     if (lslGiven && isFinite(specLsl)) {
       markLines.push({
         name: 'LSL', xAxis: specLsl,
-        lineStyle: { color: '#ef4444', type: 'dashed' as const, width: 2 },
-        label: { formatter: `LSL = ${specLsl.toFixed(3)}`, position: 'insideEndTop' as const, distance: 10 },
+        lineStyle: { color: '#dc2626', type: 'dashed' as const, width: 2 },
+        label: { formatter: `LSL = ${specLsl.toFixed(3)}`, position: 'end' as const, distance: 16, fontSize: 10 },
       });
     }
     if (uslGiven && isFinite(specUsl)) {
       markLines.push({
         name: 'USL', xAxis: specUsl,
-        lineStyle: { color: '#ef4444', type: 'dashed' as const, width: 2 },
-        label: { formatter: `USL = ${specUsl.toFixed(3)}`, position: 'insideEndTop' as const, distance: 10 },
+        lineStyle: { color: '#dc2626', type: 'dashed' as const, width: 2 },
+        label: { formatter: `USL = ${specUsl.toFixed(3)}`, position: 'end' as const, distance: 16, fontSize: 10 },
       });
     }
     if (targetGiven && isFinite(specTarget)) {
       markLines.push({
         name: '目标', xAxis: specTarget,
         lineStyle: { color: '#10b981', type: 'dashed' as const, width: 2 },
-        label: { formatter: `目标 = ${specTarget.toFixed(3)}`, position: 'insideEndTop' as const, distance: 10 },
+        label: { formatter: `目标 = ${specTarget.toFixed(3)}`, position: 'end' as const, distance: 16, fontSize: 10 },
       });
     }
 
@@ -129,7 +129,7 @@ export const NormalityTest: React.FC<NormalityTestProps> = ({ tableId, resultId 
         position: 'left' as const,
         offset: 0,
       },
-      grid: { left: 60, right: 20, top: 60, bottom: 40 },
+      grid: { left: 60, right: 20, top: 75, bottom: 40 },
       series: [
         {
           type: 'bar',
@@ -140,7 +140,7 @@ export const NormalityTest: React.FC<NormalityTestProps> = ({ tableId, resultId 
         {
           type: 'line',
           data: curveX.map((x, i) => [x, curveY[i]]),
-          name: '正态拟合', smooth: true, color: '#ef4444',
+          name: '正态拟合', smooth: true, color: '#dc2626',
           lineStyle: { width: 2 }, symbol: 'none' as const,
           markLine: markLines.length > 0 ? { silent: true, symbol: 'none' as const, data: markLines } : undefined,
         },

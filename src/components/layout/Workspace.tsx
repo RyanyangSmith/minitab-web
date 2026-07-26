@@ -28,10 +28,10 @@ export const Workspace: React.FC<{ sidebarWidth: number }> = ({ sidebarWidth }) 
 
   if (openTabs.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-400">
+      <div className="flex items-center justify-center h-full text-gray-300 select-none">
         <div className="text-center">
-          <p className="text-lg mb-2">MiniTab Web</p>
-          <p className="text-sm">点击侧边栏的工作表或分析结果开始</p>
+          <p className="text-base font-medium text-gray-400 mb-1">MiniTab Web</p>
+          <p className="text-xs text-gray-300">点击侧边栏工作表或顶部功能区开始分析</p>
         </div>
       </div>
     );
@@ -50,25 +50,25 @@ export const Workspace: React.FC<{ sidebarWidth: number }> = ({ sidebarWidth }) 
     if (result) {
       const Comp = analysisComponents[result.type];
       if (Comp) return <Comp key={result.id} tableId={result.tableId} resultId={result.id} />;
-      return <div className="p-4 text-gray-500">未知分析类型</div>;
+      return <div className="p-4 text-gray-400 text-sm">未知分析类型</div>;
     }
     return null;
   };
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center h-8 bg-gray-100 border-b border-gray-200 overflow-x-auto flex-shrink-0">
+      <div className="flex items-center h-7 bg-gray-50 border-b border-gray-200 overflow-x-auto flex-shrink-0">
         {openTabs.map((tabId) => {
           const isActive = tabId === activeTabId;
           return (
-            <div key={tabId} className={`flex items-center gap-1 px-3 py-1 text-xs cursor-pointer border-r border-gray-200 select-none flex-shrink-0 max-w-[180px] ${isActive ? 'bg-white text-gray-800 font-medium' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`} onClick={() => setActiveTab(tabId)}>
+            <div key={tabId} className={`flex items-center gap-1 px-3 py-1 text-xs cursor-pointer border-r border-gray-200 select-none flex-shrink-0 max-w-[180px] transition-colors ${isActive ? 'bg-white text-gray-800 font-medium border-t-2 border-t-blue-600 -mt-px' : 'text-gray-500 hover:bg-gray-100'}`} onClick={() => setActiveTab(tabId)}>
               <span className="truncate">{getTabLabel(tabId)}</span>
-              <button className="ml-1 p-0.5 rounded hover:bg-gray-300 flex-shrink-0" onClick={(e) => { e.stopPropagation(); closeTab(tabId); }}><X size={10} /></button>
+              <button className="ml-1 p-0.5 rounded hover:bg-gray-200 flex-shrink-0 opacity-40 hover:opacity-80" onClick={(e) => { e.stopPropagation(); closeTab(tabId); }}><X size={10} /></button>
             </div>
           );
         })}
       </div>
-      <div className="flex-1 overflow-auto">{renderContent()}</div>
+      <div className="flex-1 overflow-auto bg-white">{renderContent()}</div>
     </div>
   );
 };
