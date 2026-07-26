@@ -23,7 +23,7 @@ jobs:
           node-version: 22
       - run: npm install -g pnpm@10
       - run: pnpm install --no-frozen-lockfile
-      - run: pnpm build
+      - run: VITE_BASE=/minitab-web/ pnpm build
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3
         with:
