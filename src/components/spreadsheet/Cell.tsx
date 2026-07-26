@@ -35,7 +35,7 @@ export const Cell: React.FC<CellProps> = ({
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-  const prevActive = useRef(isActive);
+  const prevActive = useRef(false);
 
   useEffect(() => {
     if (editing && inputRef.current) {

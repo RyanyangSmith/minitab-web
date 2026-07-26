@@ -49,7 +49,7 @@ export const Workspace: React.FC<{ sidebarWidth: number }> = ({ sidebarWidth }) 
     const result = results[activeTabId];
     if (result) {
       const Comp = analysisComponents[result.type];
-      if (Comp) return <Comp tableId={result.tableId} resultId={result.id} />;
+      if (Comp) return <Comp key={result.id} tableId={result.tableId} resultId={result.id} />;
       return <div className="p-4 text-gray-500">未知分析类型</div>;
     }
     return null;

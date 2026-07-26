@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTableStore } from '../../../store/tableStore';
 import { useAnalysisStore } from '../../../store/analysisStore';
 import { linearRegression } from '../../../stats/regression';
@@ -18,7 +18,7 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
 
   const saved = results[resultId];
   const savedConfig = saved?.config as { xCol?: number; yCol?: number } | undefined;
-  const savedData = saved?.data as { result?: ReturnType<typeof linearRegression>; xCol?: number; yCol?: number } | undefined;
+  const savedData = saved?.data as { result?: ReturnType<typeof linearRegression> } | undefined;
 
   const [xCol, setXCol] = useState<number | null>(savedConfig?.xCol ?? null);
   const [yCol, setYCol] = useState<number | null>(savedConfig?.yCol ?? null);
@@ -40,7 +40,7 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
     const n = Math.min(x.length, y.length);
     const result = linearRegression(x.slice(0, n), y.slice(0, n));
     setResultData(result);
-    updateResultData(resultId, { xCol, yCol }, { result, xCol, yCol } as Record<string, unknown>);
+    updateResultData(resultId, { xCol, yCol }, { result } as Record<string, unknown>);
   };
 
   const scatterFitOption: EChartsOption | null = useMemo(() => {
@@ -102,27 +102,41 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
             <option value="">请选择 Y 列...</option>
             {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
-          <button onClick={handleRun} disabled={xCol == null || yCol == null} className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-40">
-            执行分析
-          </button>
+          <button onClick={handleRun} disabled={xCol == null || yCol == null} className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-40">执行分析</button>
         </div>
       </div>
+
       {resultData && (
         <div className="space-y-4">
-          <StatisticalTable title="回归方程" columns={[{ key: 'label', label: '项目' }, { key: 'value', label: '值' }]} data={[
-            { label: '方程', value: `Y = ${resultData.intercept.toFixed(4)} + ${resultData.slope.toFixed(4)} * X` },
-            { label: 'R', value: resultData.r }, { label: 'R\u00B2', value: resultData.rSquared },
-            { label: '调整 R\u00B2', value: resultData.adjustedRSquared }, { label: '标准误', value: resultData.standardError },
-          ]} />
-          <StatisticalTable title="系数表" columns={[
-            { key: 'term', label: '项' }, { key: 'coefficient', label: '系数' }, { key: 'se', label: '标准误' }, { key: 'tValue', label: 't 值' }, { key: 'pValue', label: 'P 值' },
-          ]} data={resultData.coefTable} />
-          <StatisticalTable title="方差分析表" columns={[
-            { key: 'source', label: '来源' }, { key: 'df', label: '自由度' }, { key: 'ss', label: '平方和' }, { key: 'ms', label: '均方' }, { key: 'fValue', label: 'F 值' }, { key: 'pValue', label: 'P 值' },
-          ]} data={resultData.anovaTable} />
-          {scatterFitOption && <ChartContainer option={scatterFitOption} height={350} />}
-          {residualFitOption && <ChartContainer option={residualFitOption} height={350} />}
-          {residualQQOption && <ChartContainer option={residualQQOption} height={350} />}
+          {/* Top: scatter+fit chart with stats on both sides */}
+          <div className="flex gap-3">
+            {/* Left stats */}
+            <div className="w-56 flex-shrink-0 text-xs space-y-2">
+              <StatisticalTable title="回归方程" columns={[{ key: 'label', label: '项目' }, { key: 'value', label: '值' }]} data={[
+                { label: '方程', value: `Y = ${resultData.intercept.toFixed(4)} + ${resultData.slope.toFixed(4)}X` },
+                { label: 'R', value: resultData.r }, { label: 'R²', value: resultData.rSquared },
+                { label: '调整 R²', value: resultData.adjustedRSquared }, { label: '标准误', value: resultData.standardError },
+              ]} />
+              <StatisticalTable title="系数表" columns={[
+                { key: 'term', label: '项' }, { key: 'coefficient', label: '系数' }, { key: 'se', label: '标准误' }, { key: 'tValue', label: 't 值' }, { key: 'pValue', label: 'P 值' },
+              ]} data={resultData.coefTable} />
+            </div>
+            {/* Center chart */}
+            <div className="flex-1 min-w-0">
+              {scatterFitOption && <ChartContainer option={scatterFitOption} height={380} />}
+            </div>
+            {/* Right stats */}
+            <div className="w-56 flex-shrink-0 text-xs">
+              <StatisticalTable title="方差分析表" columns={[
+                { key: 'source', label: '来源' }, { key: 'df', label: '自由度' }, { key: 'ss', label: '平方和' }, { key: 'ms', label: '均方' }, { key: 'fValue', label: 'F 值' }, { key: 'pValue', label: 'P 值' },
+              ]} data={resultData.anovaTable} />
+            </div>
+          </div>
+          {/* Bottom: residual charts */}
+          <div className="flex gap-3">
+            <div className="flex-1">{residualFitOption && <ChartContainer option={residualFitOption} height={300} />}</div>
+            <div className="flex-1">{residualQQOption && <ChartContainer option={residualQQOption} height={300} />}</div>
+          </div>
         </div>
       )}
     </div>
