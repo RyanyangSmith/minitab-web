@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 .pnpm-store/
 
@@ -29,3 +29,8 @@ pnpm-debug.log*
 coverage/
 
 *.tsbuildinfo
+
+# Temp deployment files
+tmp-deploy*/
+dist.tar
+dist.zip
