@@ -1,0 +1,4 @@
+﻿name = "minitab-web"
+main = "_worker.js"
+compatibility_date = "2026-07-26"
+assets = { directory = "static", binding = "ASSETS" }
