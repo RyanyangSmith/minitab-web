@@ -19,7 +19,6 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
   const saved = results[resultId];
   const savedConfig = saved?.config as { xCol?: number; yCol?: number } | undefined;
   const savedData = saved?.data as { result?: ReturnType<typeof linearRegression> } | undefined;
-
   const [xCol, setXCol] = useState<number | null>(savedConfig?.xCol ?? null);
   const [yCol, setYCol] = useState<number | null>(savedConfig?.yCol ?? null);
   const [resultData, setResultData] = useState<ReturnType<typeof linearRegression> | null>(savedData?.result ?? null);
@@ -34,8 +33,7 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
 
   const handleRun = () => {
     if (xCol == null || yCol == null) return;
-    const x = getColumnData(tableId, xCol);
-    const y = getColumnData(tableId, yCol);
+    const x = getColumnData(tableId, xCol); const y = getColumnData(tableId, yCol);
     if (x.length < 3 || y.length < 3) return;
     const n = Math.min(x.length, y.length);
     const result = linearRegression(x.slice(0, n), y.slice(0, n));
@@ -88,7 +86,7 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
   if (!table) return <div className="p-4 text-gray-500">工作表不存在</div>;
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-3">
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
         <h3 className="text-sm font-semibold text-gray-700">线性回归 - 配置</h3>
         <div className="flex items-center gap-2">
@@ -107,32 +105,30 @@ export const LinearRegression: React.FC<LinearRegressionProps> = ({ tableId, res
       </div>
 
       {resultData && (
-        <div className="space-y-4">
-          {/* Top: scatter+fit chart with stats on both sides */}
+        <div className="space-y-3">
+          {/* Row 1: Scatter chart (left) + Regression equation (right) */}
           <div className="flex gap-3">
-            {/* Left stats */}
-            <div className="w-56 flex-shrink-0 text-xs space-y-2">
+            <div className="flex-1">{scatterFitOption && <ChartContainer option={scatterFitOption} height={320} />}</div>
+            <div className="w-64 flex-shrink-0 text-xs">
               <StatisticalTable title="回归方程" columns={[{ key: 'label', label: '项目' }, { key: 'value', label: '值' }]} data={[
                 { label: '方程', value: `Y = ${resultData.intercept.toFixed(4)} + ${resultData.slope.toFixed(4)}X` },
                 { label: 'R', value: resultData.r }, { label: 'R²', value: resultData.rSquared },
                 { label: '调整 R²', value: resultData.adjustedRSquared }, { label: '标准误', value: resultData.standardError },
               ]} />
-              <StatisticalTable title="系数表" columns={[
-                { key: 'term', label: '项' }, { key: 'coefficient', label: '系数' }, { key: 'se', label: '标准误' }, { key: 'tValue', label: 't 值' }, { key: 'pValue', label: 'P 值' },
-              ]} data={resultData.coefTable} />
-            </div>
-            {/* Center chart */}
-            <div className="flex-1 min-w-0">
-              {scatterFitOption && <ChartContainer option={scatterFitOption} height={250} />}
-            </div>
-            {/* Right stats */}
-            <div className="w-56 flex-shrink-0 text-xs">
-              <StatisticalTable title="方差分析表" columns={[
-                { key: 'source', label: '来源' }, { key: 'df', label: '自由度' }, { key: 'ss', label: '平方和' }, { key: 'ms', label: '均方' }, { key: 'fValue', label: 'F 值' }, { key: 'pValue', label: 'P 值' },
-              ]} data={resultData.anovaTable} />
             </div>
           </div>
-          {/* Bottom: residual charts */}
+
+          {/* Row 2: ANOVA table (full width) */}
+          <StatisticalTable title="方差分析表" columns={[
+            { key: 'source', label: '来源' }, { key: 'df', label: '自由度' }, { key: 'ss', label: '平方和' }, { key: 'ms', label: '均方' }, { key: 'fValue', label: 'F 值' }, { key: 'pValue', label: 'P 值' },
+          ]} data={resultData.anovaTable} />
+
+          {/* Row 3: Coefficient table (full width) */}
+          <StatisticalTable title="系数表" columns={[
+            { key: 'term', label: '项' }, { key: 'coefficient', label: '系数' }, { key: 'se', label: '标准误' }, { key: 'tValue', label: 't 值' }, { key: 'pValue', label: 'P 值' },
+          ]} data={resultData.coefTable} />
+
+          {/* Row 4: Residual charts (left + right) */}
           <div className="flex gap-3">
             <div className="flex-1">{residualFitOption && <ChartContainer option={residualFitOption} height={250} />}</div>
             <div className="flex-1">{residualQQOption && <ChartContainer option={residualQQOption} height={250} />}</div>

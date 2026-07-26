@@ -191,8 +191,8 @@ export const NormalityTest: React.FC<NormalityTestProps> = ({ tableId, resultId 
             </div>
           </div>
 
-          {/* Equal-width PPM + normality test tables */}
-          {normResult && (
+                    {/* Equal-width PPM + normality test tables */}
+          {resultData && (
             <div className="flex gap-3 mt-2">
               <div className="flex-1 text-xs">
                 <table className="w-full border-collapse border border-gray-200">
@@ -204,19 +204,20 @@ export const NormalityTest: React.FC<NormalityTestProps> = ({ tableId, resultId 
                   </tbody>
                 </table>
               </div>
-              <div className="flex-1 text-xs">
-                <table className="w-full border-collapse border border-gray-200">
-                  <thead><tr className="bg-gray-50"><th className="px-2 py-1 border border-gray-200 text-left">正态检验</th><th className="px-2 py-1 border border-gray-200 text-right">统计量</th><th className="px-2 py-1 border border-gray-200 text-right">P 值</th></tr></thead>
-                  <tbody>
-                    <tr><td className="px-2 py-1 border border-gray-200">Anderson-Darling</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.ad.statistic.toFixed(4)}</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.ad.pValue.toFixed(4)}</td></tr>
-                    <tr><td className="px-2 py-1 border border-gray-200">Shapiro-Wilk</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.sw.statistic.toFixed(4)}</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.sw.pValue.toFixed(4)}</td></tr>
-                    <tr><td className="px-2 py-1 border border-gray-200">Kolmogorov-Smirnov</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.ks.statistic.toFixed(4)}</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.ks.pValue.toFixed(4)}</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              {normResult && (
+                <div className="flex-1 text-xs">
+                  <table className="w-full border-collapse border border-gray-200">
+                    <thead><tr className="bg-gray-50"><th className="px-2 py-1 border border-gray-200 text-left">正态检验</th><th className="px-2 py-1 border border-gray-200 text-right">统计量</th><th className="px-2 py-1 border border-gray-200 text-right">P 值</th></tr></thead>
+                    <tbody>
+                      <tr><td className="px-2 py-1 border border-gray-200">Anderson-Darling</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.ad.statistic.toFixed(4)}</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.ad.pValue.toFixed(4)}</td></tr>
+                      <tr><td className="px-2 py-1 border border-gray-200">Shapiro-Wilk</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.sw.statistic.toFixed(4)}</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.sw.pValue.toFixed(4)}</td></tr>
+                      <tr><td className="px-2 py-1 border border-gray-200">Kolmogorov-Smirnov</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.ks.statistic.toFixed(4)}</td><td className="px-2 py-1 border border-gray-200 text-right font-mono">{normResult.ks.pValue.toFixed(4)}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          )}    </div>
       )}
     </div>
   );
