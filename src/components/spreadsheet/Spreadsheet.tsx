@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTableStore } from '../../store/tableStore';
 import { useSelection } from '../../hooks/useSelection';
 import { useClipboard } from '../../hooks/useClipboard';
@@ -22,6 +22,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
   const ensureSize = useTableStore((s) => s.ensureSize);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const [autoEditCell, setAutoEditCell] = useState<{ row: number; col: number } | null>(null);
 
   const {
     selection,
@@ -51,8 +52,8 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
   const handleMouseDown = useCallback(
     (row: number, col: number, e: React.MouseEvent) => {
       if (e.button !== 0) return;
+      setAutoEditCell(null);
       startSelection(row, col, e.ctrlKey || e.metaKey, e.shiftKey);
-      // Focus the container for keyboard events
       containerRef.current?.focus();
     },
     [startSelection]
@@ -73,6 +74,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
 
   const handleColumnClick = useCallback(
     (col: number) => {
+      setAutoEditCell(null);
       selectColumn(col, table.rows);
     },
     [selectColumn, table.rows]
@@ -90,7 +92,15 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
     [tableId, setCellValue, setSubHeader]
   );
 
-  // Keyboard shortcuts
+  // Keyboard navigation - set autoEdit before moving selection
+  const navigateTo = useCallback(
+    (row: number, col: number) => {
+      setAutoEditCell({ row, col });
+      startSelection(row, col, false, false);
+    },
+    [startSelection]
+  );
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       const active = selection.activeCell;
@@ -111,41 +121,31 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
       switch (e.key) {
         case 'ArrowUp':
           e.preventDefault();
-          if (active.row > 2) {
-            startSelection(active.row - 1, active.col, false, false);
-          }
+          if (active.row > 2) navigateTo(active.row - 1, active.col);
           break;
         case 'ArrowDown':
           e.preventDefault();
-          if (active.row < table.rows - 1) {
-            startSelection(active.row + 1, active.col, false, false);
-          }
+          if (active.row < table.rows - 1) navigateTo(active.row + 1, active.col);
           break;
         case 'ArrowLeft':
           e.preventDefault();
-          if (active.col > 0) {
-            startSelection(active.row, active.col - 1, false, false);
-          }
+          if (active.col > 0) navigateTo(active.row, active.col - 1);
           break;
         case 'ArrowRight':
           e.preventDefault();
-          if (active.col < table.columns - 1) {
-            startSelection(active.row, active.col + 1, false, false);
-          }
+          if (active.col < table.columns - 1) navigateTo(active.row, active.col + 1);
           break;
         case 'Tab':
           e.preventDefault();
           if (active.col < table.columns - 1) {
-            startSelection(active.row, active.col + 1, false, false);
+            navigateTo(active.row, active.col + 1);
           } else if (active.row < table.rows - 1) {
-            startSelection(active.row + 1, 0, false, false);
+            navigateTo(active.row + 1, 0);
           }
           break;
         case 'Enter':
           e.preventDefault();
-          if (active.row < table.rows - 1) {
-            startSelection(active.row + 1, active.col, false, false);
-          }
+          if (active.row < table.rows - 1) navigateTo(active.row + 1, active.col);
           break;
         case 'Delete':
         case 'Backspace':
@@ -153,7 +153,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
           for (const range of selection.ranges) {
             for (let r = range.startRow; r <= range.endRow && r < table.rows; r++) {
               for (let c = range.startCol; c <= range.endCol && c < table.columns; c++) {
-                if (r === 0) continue; // Cannot delete header
+                if (r === 0) continue;
                 handleCellChange(r, c, '');
               }
             }
@@ -161,7 +161,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
           break;
       }
     },
-    [selection, table, copy, paste, startSelection, handleCellChange, tableId]
+    [selection, table, copy, paste, navigateTo, handleCellChange, tableId]
   );
 
   return (
@@ -197,6 +197,7 @@ export const Spreadsheet: React.FC<SpreadsheetProps> = ({ tableId }) => {
         onMouseDown={handleMouseDown}
         onMouseEnter={handleMouseEnter}
         colWidth={COL_WIDTH}
+        autoEditCell={autoEditCell}
       />
     </div>
   );

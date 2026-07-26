@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Cell } from './Cell';
 import { RowNumberCell } from './RowNumberCell';
 import type { CellValue } from '../../types';
@@ -13,6 +13,7 @@ interface SpreadsheetBodyProps {
   onMouseDown: (row: number, col: number, e: React.MouseEvent) => void;
   onMouseEnter: (row: number, col: number, e: React.MouseEvent) => void;
   colWidth: number;
+  autoEditCell: { row: number; col: number } | null;
 }
 
 export const SpreadsheetBody: React.FC<SpreadsheetBodyProps> = ({
@@ -25,8 +26,8 @@ export const SpreadsheetBody: React.FC<SpreadsheetBodyProps> = ({
   onMouseDown,
   onMouseEnter,
   colWidth,
+  autoEditCell,
 }) => {
-  // Only render data rows (starting from row 2)
   const dataRows = rows - 2;
 
   return (
@@ -37,20 +38,24 @@ export const SpreadsheetBody: React.FC<SpreadsheetBodyProps> = ({
           return (
             <div key={`row-${row}`} className="flex">
               <RowNumberCell row={row} isSelected={false} />
-              {Array.from({ length: columns }, (_, c) => (
-                <Cell
-                  key={`cell-${row}-${c}`}
-                  value={getCellValue(row, c)}
-                  row={row}
-                  col={c}
-                  isSelected={isSelected(row, c)}
-                  isActive={activeCell?.row === row && activeCell?.col === c}
-                  onChange={(v) => onCellChange(row, c, v)}
-                  onMouseDown={(e) => onMouseDown(row, c, e)}
-                  onMouseEnter={(e) => onMouseEnter(row, c, e)}
-                  width={colWidth}
-                />
-              ))}
+              {Array.from({ length: columns }, (_, c) => {
+                const cellAutoEdit = autoEditCell?.row === row && autoEditCell?.col === c;
+                return (
+                  <Cell
+                    key={`cell-${row}-${c}`}
+                    value={getCellValue(row, c)}
+                    row={row}
+                    col={c}
+                    isSelected={isSelected(row, c)}
+                    isActive={activeCell?.row === row && activeCell?.col === c}
+                    autoEdit={cellAutoEdit}
+                    onChange={(v) => onCellChange(row, c, v)}
+                    onMouseDown={(e) => onMouseDown(row, c, e)}
+                    onMouseEnter={(e) => onMouseEnter(row, c, e)}
+                    width={colWidth}
+                  />
+                );
+              })}
             </div>
           );
         })}

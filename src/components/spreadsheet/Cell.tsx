@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { CellValue } from '../../types';
 
 interface CellProps {
@@ -9,6 +9,7 @@ interface CellProps {
   isActive: boolean;
   isHeader?: boolean;
   readOnly?: boolean;
+  autoEdit?: boolean;
   onChange?: (value: string) => void;
   onMouseDown?: (e: React.MouseEvent) => void;
   onMouseEnter?: (e: React.MouseEvent) => void;
@@ -24,6 +25,7 @@ export const Cell: React.FC<CellProps> = ({
   isActive,
   isHeader = false,
   readOnly = false,
+  autoEdit = false,
   onChange,
   onMouseDown,
   onMouseEnter,
@@ -33,6 +35,7 @@ export const Cell: React.FC<CellProps> = ({
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevActive = useRef(isActive);
 
   useEffect(() => {
     if (editing && inputRef.current) {
@@ -41,12 +44,14 @@ export const Cell: React.FC<CellProps> = ({
     }
   }, [editing]);
 
-  // Sync edit state from parent (keyboard-triggered edits)
+  // Auto-enter edit mode when activated by keyboard navigation
   useEffect(() => {
-    if (isActive && !editing) {
+    if (isActive && !prevActive.current && autoEdit && !readOnly) {
       setEditValue(value == null ? '' : String(value));
+      setEditing(true);
     }
-  }, [isActive, value, editing]);
+    prevActive.current = isActive;
+  }, [isActive, autoEdit, readOnly, value]);
 
   const handleDoubleClick = () => {
     if (readOnly) return;
@@ -82,7 +87,6 @@ export const Cell: React.FC<CellProps> = ({
   // Start editing on keypress when cell is active
   const handleActivationKey = (e: React.KeyboardEvent) => {
     if (readOnly || editing) return;
-    // Start editing on any printable character
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
       setEditValue(e.key);
       setEditing(true);

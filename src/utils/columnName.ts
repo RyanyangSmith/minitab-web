@@ -1,10 +1,10 @@
-﻿/**
- * Convert 1-based column index to column name.
- * 1 -> C1, 26 -> C26, 27 -> AA, 52 -> AZ, 53 -> BA, 702 -> ZZ
+/**
+ * Convert 0-based column index to column name.
+ * 0 -> C1, 1 -> C2, 25 -> C26, 26 -> AA, 51 -> AZ, 52 -> BA, 701 -> ZZ
  */
 export function columnName(index: number): string {
   let name = '';
-  let n = index;
+  let n = index + 1;
   while (n > 0) {
     n--;
     name = String.fromCharCode(65 + (n % 26)) + name;
@@ -14,8 +14,8 @@ export function columnName(index: number): string {
 }
 
 /**
- * Extract column index from column name (reverse of columnName).
- * C1 -> 1, AA -> 27
+ * Extract 0-based column index from column name (reverse of columnName).
+ * C1 -> 0, AA -> 26
  */
 export function columnIndex(name: string): number {
   const letters = name.replace(/^C/i, '');
@@ -23,5 +23,5 @@ export function columnIndex(name: string): number {
   for (let i = 0; i < letters.length; i++) {
     index = index * 26 + (letters.charCodeAt(i) - 64);
   }
-  return index;
+  return index - 1;
 }
