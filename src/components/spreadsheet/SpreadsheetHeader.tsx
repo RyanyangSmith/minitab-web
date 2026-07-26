@@ -1,7 +1,6 @@
 import React from 'react';
 import { ColumnHeader } from './ColumnHeader';
 import { Cell } from './Cell';
-import type { CellValue } from '../../types';
 
 interface SpreadsheetHeaderProps {
   columns: number;
@@ -26,13 +25,12 @@ export const SpreadsheetHeader: React.FC<SpreadsheetHeaderProps> = ({
   colWidth,
 }) => {
   return (
-    <div className="flex-shrink-0">
+    <div>
       {/* Row 0: Column titles (C1, C2...) */}
       <div className="flex" style={{ height: CELL_HEIGHT }}>
-        {/* Row number spacer for row 0 */}
         <div
-          className="flex items-center justify-center border-r border-b border-gray-300 bg-gray-100 flex-shrink-0"
-          style={{ width: ROW_NUM_WIDTH, height: CELL_HEIGHT }}
+          className="flex items-center justify-center border-r border-b border-gray-200 bg-gray-100 flex-shrink-0"
+          style={{ width: ROW_NUM_WIDTH, minWidth: ROW_NUM_WIDTH, height: CELL_HEIGHT }}
         />
         {Array.from({ length: columns }, (_, c) => (
           <ColumnHeader
@@ -46,10 +44,9 @@ export const SpreadsheetHeader: React.FC<SpreadsheetHeaderProps> = ({
       </div>
       {/* Row 1: Editable sub-headers */}
       <div className="flex" style={{ height: CELL_HEIGHT }}>
-        {/* Row number spacer for row 1 */}
         <div
-          className="flex items-center justify-center border-r border-b border-gray-300 bg-gray-100 flex-shrink-0"
-          style={{ width: ROW_NUM_WIDTH, height: CELL_HEIGHT }}
+          className="flex items-center justify-center border-r border-b border-gray-200 bg-gray-100 flex-shrink-0"
+          style={{ width: ROW_NUM_WIDTH, minWidth: ROW_NUM_WIDTH, height: CELL_HEIGHT }}
         />
         {Array.from({ length: columns }, (_, c) => (
           <Cell
