@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import type { AnalysisResult, AnalysisType } from '../types';
 import { zh } from '../i18n/zh';
 
@@ -24,6 +24,7 @@ interface AnalysisStore {
     config: Record<string, unknown>,
     data: Record<string, unknown>
   ) => string;
+  updateResultData: (id: string, config: Record<string, unknown>, data: Record<string, unknown>) => void;
   renameResult: (id: string, name: string) => void;
   removeResult: (id: string) => void;
 
@@ -56,13 +57,21 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     return id;
   },
 
-  renameResult: (id, name) => {
+  updateResultData: (id, config, data) => {
     set((s) => {
       const r = s.results[id];
       if (!r) return s;
       return {
-        results: { ...s.results, [id]: { ...r, name } },
+        results: { ...s.results, [id]: { ...r, config, data } },
       };
+    });
+  },
+
+  renameResult: (id, name) => {
+    set((s) => {
+      const r = s.results[id];
+      if (!r) return s;
+      return { results: { ...s.results, [id]: { ...r, name } } };
     });
   },
 
@@ -81,28 +90,16 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       const newTabs = s.openTabs.filter((tid) => tid !== id);
       const newActive =
         s.activeTabId === id
-          ? newTabs.length > 0
-            ? newTabs[newTabs.length - 1]
-            : null
+          ? newTabs.length > 0 ? newTabs[newTabs.length - 1] : null
           : s.activeTabId;
-      return {
-        results: rest,
-        resultByTable: newByTable,
-        openTabs: newTabs,
-        activeTabId: newActive,
-      };
+      return { results: rest, resultByTable: newByTable, openTabs: newTabs, activeTabId: newActive };
     });
   },
 
   openTab: (id) => {
     set((s) => {
-      if (s.openTabs.includes(id)) {
-        return { activeTabId: id };
-      }
-      return {
-        openTabs: [...s.openTabs, id],
-        activeTabId: id,
-      };
+      if (s.openTabs.includes(id)) return { activeTabId: id };
+      return { openTabs: [...s.openTabs, id], activeTabId: id };
     });
   },
 
@@ -111,9 +108,7 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       const newTabs = s.openTabs.filter((tid) => tid !== id);
       const newActive =
         s.activeTabId === id
-          ? newTabs.length > 0
-            ? newTabs[newTabs.length - 1]
-            : null
+          ? newTabs.length > 0 ? newTabs[newTabs.length - 1] : null
           : s.activeTabId;
       return { openTabs: newTabs, activeTabId: newActive };
     });
